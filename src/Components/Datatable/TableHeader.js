@@ -38,7 +38,10 @@ export default function TableHeader(props) {
           <Col sm="4" style={style.flexClass}>
             {props.dropdown}
           </Col>
-          <Col sm="3" style={style.flexClass}>
+          <Col sm="2" style={style.flexClass}>
+            {props.dropdowns}
+          </Col>
+          <Col sm="2" style={style.flexClass}>
             {props.dropdownslug}
           </Col>
           {(props.config.show_filter) ? (
@@ -53,6 +56,7 @@ export default function TableHeader(props) {
                   <option value="hp_upto_date">Upto Date</option>
                   <option value="hp_image_path">Image</option>
                   <option value="hp_active_yn">Active</option>
+                  <option value="shp_html">SHP HTML</option>
                 </select>
                 <Form.Control size="sm" type="text" placeholder="Search" id="standard-full-width" label={props.config.language.filter} onChange={props.filterRecords} />
                 <Button size="sm" onClick={props.filterClick} variant="primary"><FontAwesomeIcon icon={faFilter} /></Button>

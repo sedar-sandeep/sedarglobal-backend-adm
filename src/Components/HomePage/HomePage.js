@@ -59,7 +59,8 @@ class HomePage extends Component {
       refSysId: '',
       security: '',
       language: '',
-      btnType: ''
+      btnType: '',
+      selectedLanguage: 'en' // Add selectedLanguage state
     };
   }
 
@@ -124,6 +125,15 @@ class HomePage extends Component {
       this.reactDatatable();
     });
   }
+  langCode = (data) => {
+    this.setState({
+      selectedLanguage: data
+    }, () => {
+      this.reactDatatable();
+      this.getSlugDrop(data);
+
+    });
+  }
   globalContent = (data) => {
     this.setState({
       globalContent: data
@@ -133,7 +143,7 @@ class HomePage extends Component {
   }
 
   getSlugDrop = (param) => {
-    ApiDataService.getAll('admin/portal/homepage/slug_lov?page_name=' + param, '').then(response => {
+    ApiDataService.getAll('admin/portal/homepage/slug_lov?page_name=' + param, '',this.state.selectedLanguage).then(response => {
       let json = response.data.result;
       var objectArray = [];
       objectArray.push({ value: "", label: "Select Slug" });
@@ -153,7 +163,7 @@ class HomePage extends Component {
     let globalContent = this.state.globalContent;
     console.log(pagename, 'pagename')
     console.log(globalContent, 'globalContent');
-    ApiDataService.getAll('admin/portal/homepage?page_name=' + pagename + '&hp_slug_url=' + slugname + '&', pagination).then(response => {
+    ApiDataService.getAll('admin/portal/homepage?page_name=' + pagename + '&hp_slug_url=' + slugname + '&', pagination,this.state.selectedLanguage).then(response => {
       if (response.data.return_status !== "0" && typeof response.data.return_status != 'undefined') {
         this.errorThrough(response.data.error_message, "ERR");
       } else {
@@ -372,6 +382,12 @@ class HomePage extends Component {
       });		*/
   }
 
+  // Add function to handle language selection from datatable
+  handleLanguageChange = (language) => {
+    console.log('HomePage received language change:', language);
+    this.setState({ selectedLanguage: language });
+  }
+
   render() {
     let popupTitle = 'Seo';
     let seoForm;
@@ -406,9 +422,11 @@ class HomePage extends Component {
                   slugDrop={this.state.slugDrop}
                   history_btn={this.state.history_btn}
                   pageName={this.pageName}
+                  langCode={this.langCode}
                   slugName={this.slugName}
                   globalContent={this.globalContent}
                   seoCategory={this.seoCategory}
+                  onLanguageChange={this.handleLanguageChange}
                 />
               </Col>
             </Row>
@@ -423,7 +441,7 @@ class HomePage extends Component {
                   closeModal={this.modalClose}
                   errorMessage={this.errorThrough}
                   allState={this.state}
-                  language_code={this.state.language}
+                  language_code={this.state.selectedLanguage}
                   btnType={this.state.btnType}
                 />
               </Col>
@@ -480,6 +498,7 @@ class HomePage extends Component {
                       label="Duplicate this hierarchy records."
                       onChange={(e) => this.switchDub(e, 'DUP_MANY')}
                     />
+                    
                   </Form.Group>
                   <Form.Group style={{ margin: "0px" }}>
                     <Button onClick={this.processDuplicate} className="float-right" size="sm">Process</Button>

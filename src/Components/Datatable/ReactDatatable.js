@@ -497,6 +497,7 @@ class ReactDatatable extends Component {
           config={this.config}
           id={this.props.id}
           dropdown={this.props.dropdown}
+          dropdowns={this.props.dropdowns}
           dropdownslug={this.props.dropdownslug}
           history_btn={this.props.history_btn}
           lengthMenuText={lengthMenuText}
@@ -595,36 +596,67 @@ class ReactDatatable extends Component {
                       if (record.record_level === "2") { levelChild = 'childRow2' } else if (record.record_level === "3") { levelChild = 'childRow3' } else if (record.record_level === "4") { levelChild = 'childRow4' };
                       var parentRow=[];
                       var childRow = [];
-                      this.props.columns.map((column, colIndex)=>{
-                        let checkChild = column.className;
-                        if (checkChild !=='childColumn'){
-                          var levelChildColu = '';
-                          var spantag='';
-                          if (colIndex === 0) {
-                            if (record.record_level === "2") { levelChildColu = 'child2Column' } else if (record.record_level === "3") { levelChildColu = 'child3Column' } else if (record.record_level === "4") { levelChildColu = 'child4Column' }
-                            spantag = (<span onClick={(e) => this.expandChild(e, rowIndex)} className="childExpand"><FontAwesomeIcon icon={this.state.childshowhide === rowIndex ? faMinusSquare : faPlusSquare} /></span>);
-                          };
-                          if (column.cell && typeof column.cell === "function") {
-                            parentRow.push(<td className={column.className} key={(column.key) ? column.key : column.text}>{
-                              [spantag,
-                              column.cell(record, rowIndex)]
-                            }</td>);
-                          } else if (record[column.key]) {
-                            parentRow.push(<td className={column.className + ' ' + levelChildColu} key={(column.key) ? column.key : column.text}>
-                              {
-                                [spantag,
-                              record[column.key]]
+                      this.props.columns.map((column, colIndex) => {
+                          let checkChild = column.className;
+                          if (checkChild !== 'childColumn') {
+                              var levelChildColu = '';
+                              var spantag = '';
+                              if (colIndex === 0) {
+                                  if (record.record_level === "2") {
+                                      levelChildColu = 'child2Column';
+                                  } else if (record.record_level === "3") {
+                                      levelChildColu = 'child3Column';
+                                  } else if (record.record_level === "4") {
+                                      levelChildColu = 'child4Column';
+                                  }
+                                  spantag = (
+                                      <span onClick={(e) => this.expandChild(e, rowIndex)} className="childExpand">
+                                          <FontAwesomeIcon icon={this.state.childshowhide === rowIndex ? faMinusSquare : faPlusSquare} />
+                                      </span>
+                                  );
                               }
-                            </td>);
+
+                              if (column.cell && typeof column.cell === "function") {
+                                  parentRow.push(
+                                      <td className={column.className} key={column.key || column.text}>
+                                          {[spantag, column.cell(record, rowIndex)]}
+                                      </td>
+                                  );
+                              } else if (record[column.key]) {
+                                  let cellContent;
+
+                                  // ✅ If key is 'hp_file_path', render <img>
+                                  if (column.key === "hp_file_path") {
+                                      cellContent = (
+                                          <img
+                                              src={record[column.key]}
+                                              alt="preview"
+                                              style={{ maxWidth: "100px", maxHeight: "80px" }}
+                                          />
+                                      );
+                                  } else {
+                                      cellContent = record[column.key];
+                                  }
+
+                                  parentRow.push(
+                                      <td className={`${column.className} ${levelChildColu}`} key={column.key || column.text}>
+                                          {[spantag, cellContent]}
+                                      </td>
+                                  );
+                              } else {
+                                  parentRow.push(
+                                      <td className={column.className} key={column.key || column.text}></td>
+                                  );
+                              }
                           } else {
-                            parentRow.push(<td className={column.className} key={(column.key) ? column.key : column.text}></td>)
+                              childRow.push(
+                                  <li className={`${column.className} ${levelChildColu} list-group-item`} key={column.key || column.text}>
+                                      {column.text + ' : ' + record[column.key]}
+                                  </li>
+                              );
                           }
-                        }else{
-                          childRow.push(<li className={column.className + ' ' + levelChildColu +' list-group-item'} key={(column.key) ? column.key : column.text}>
-                            {column.text +' : '+ record[column.key]}
-                          </li>);
-                        }
-                    });
+                      });
+
                       let parentTableRow = (<tr className={levelChild} key={record[this.config.key_column]} onClick={(e) => this.props.onRowClicked(e, record, rowIndex)} >{parentRow}</tr>);
                       let ChildTableRow = (<tr className={this.state.childshowhide === rowIndex ? ' borderTop' : 'childshowhide borderTop'} key={record[this.config.key_column + 1]}><td><ul className="list-group list-group-flush">{childRow}</ul></td></tr>);
                       return ([parentTableRow, ChildTableRow]);

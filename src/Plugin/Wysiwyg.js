@@ -2,14 +2,34 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import { CkEditorImageUpload } from './CkEditorImageUpload'; // Import the custom plugin
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import './WysiwygCustom.scss';
+import { useEffect } from 'react';
 
 function Wysiwyg({ onChange, editorLoaded, name, value, disabled = false, lang = 'en' }) {
 
+    useEffect(() => {
+        // Simple fix for Bootstrap modal focus trap with CKEditor dialogs
+        if (window.$ && window.$.fn && window.$.fn.modal) {
+            window.$.fn.modal.Constructor.prototype._enforceFocus = function () { };
+        }
+
+        // Simple focus trap fix for CKEditor dialogs
+        const handler = (e) => {
+            const ckPanel = document.querySelector('.ck.ck-balloon-panel');
+            if (ckPanel && ckPanel.contains(e.target)) {
+                e.stopPropagation();
+            }
+        };
+
+        document.addEventListener('focusin', handler, true);
+
+        return () => {
+            document.removeEventListener('focusin', handler, true);
+        };
+    }, []);
 
     return (
         <div className='wysiwyg_CKEditor'>
             {editorLoaded ? (
-
                 <CKEditor
                     name={name}
                     editor={ClassicEditor}
@@ -25,11 +45,20 @@ function Wysiwyg({ onChange, editorLoaded, name, value, disabled = false, lang =
                                 { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
                             ],
                         },
+                        toolbar: [
+                            'heading', '|',
+                            'bold', 'italic', 'link', '|',
+                            'bulletedList', 'numberedList', '|',
+                            'outdent', 'indent', '|',
+                            'blockQuote', '|',
+                            'imageUpload', 'mediaEmbed', '|',
+                            'insertTable', '|',
+                            'undo', 'redo'
+                        ]
                     }}
                     data={value}
                     onChange={(event, editor) => {
                         const data = editor.getData();
-                        //console.log({ event, editor, data })
                         onChange(data);
                     }}
                 />

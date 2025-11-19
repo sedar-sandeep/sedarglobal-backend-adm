@@ -4,11 +4,11 @@ import http from "../services/http-common";
 const querystring = require('querystring');
 
 class ApiDataService extends Component {
-  getAll(path, param) {
+  getAll(path, param,lang="") {
     var menuUrl = window.location.pathname;
     var menuname = menuUrl.replace(/\//g, '').toUpperCase() + '_CHID';
     var menu = localStorage.getItem(menuname);
-    let config = this.setUpConfiguartion(menu);
+    let config = this.setUpConfiguartion(menu,lang);
     return http.get(`${path}${param}`, config);
   }
   get(path, lang) {

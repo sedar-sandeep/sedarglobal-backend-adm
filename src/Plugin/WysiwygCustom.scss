@@ -5,3 +5,7 @@
     overflow-y: scroll;
   }
 }
+
+.ck.ck-balloon-panel {
+  z-index: 9999 !important;
+}
