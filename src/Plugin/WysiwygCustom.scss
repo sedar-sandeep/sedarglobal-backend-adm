@@ -1,0 +1,7 @@
+.wysiwyg_CKEditor {
+  width: 99.9%;
+  .ck-editor__main {
+    max-height: 320px;
+    overflow-y: scroll;
+  }
+}
