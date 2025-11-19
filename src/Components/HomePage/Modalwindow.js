@@ -75,6 +75,7 @@ const MultiValue = props => {
 const animatedComponents = makeAnimated();
 
 function Modalwindow(props) {
+  console.log(props,'props')
   const updateContext = useContext(PageContext);
   // const [richText, setRichText] = useState({
   //   editor: EditorState.createEmpty(),
@@ -374,7 +375,7 @@ function Modalwindow(props) {
   }
 
   const CountryFun = () => {
-    ApiDataService.get('admin/portal/homepage/country_lov').then(response => {
+    ApiDataService.get('admin/portal/homepage/country_lov',props?.language_code).then(response => {
       setCountry_lov(response.data.result);
     }).catch(function (error) {
       console.log(error, 'Error')
@@ -605,18 +606,33 @@ function Modalwindow(props) {
     }
 
   }, [props.sysid, props.show, props.allState.pagename, setValue, reset]);
+  // useEffect(() => {
+  //   if (langForm.langDrop.length > 0) {
+  //     var lang = langForm.langDrop[0].code;
+  //     executeLanguage(lang);
+  //   }
+  // }, [langForm.langDrop]);
+
+  // Auto-select language from datatable when modal opens
   useEffect(() => {
-    if (langForm.langDrop.length > 0) {
-      var lang = langForm.langDrop[0].code;
-      executeLanguage(lang);
+    if (props.allState.language !== '' && props.allState.selectedLanguage && langForm.langDrop.length > 0) {
+      console.log('Setting language to:', props.allState.selectedLanguage);
+      setLangForm(prevState => ({
+        ...prevState,
+        selectLang: props.allState.selectedLanguage
+      }));
+      // Execute the language change
+      executeLanguage(props.allState.selectedLanguage);
     }
-  }, [langForm.langDrop]);
+  }, [props.allState.selectedLanguage, props.allState.language, langForm.langDrop]);
 
   const checkFileTypeExist = (stringurl) => {
-    return vedioFormat.some(function (data) {
-      return stringurl.includes(data);
-    });
-  }
+    console.log(stringurl, 'stringurlstringurl');
+
+    if (!stringurl) return false;
+
+    return vedioFormat.some((data) => stringurl.includes(data));
+  };
 
   const getLanguageLov = async () => {
     await ApiDataService.get(Api_Langlov, null).then(response => {
@@ -629,62 +645,65 @@ function Modalwindow(props) {
   }
   const executeLanguage = (lang) => {
     let sysid = props.sysid;
-    ApiDataService.get(Api_Edit + 'lang/' + sysid + '/edit', lang).then(response => {
-      let data = response.data.result[0];
-      setValue("hp_desc", data.hp_desc);
-      setValue("hp_link_title", data.hp_link_title);
-      setValue("hp_link_url", data.hp_desc.replace(/[^A-Z0-9]+/ig, "-").replace(/-$/, "").toLowerCase());
-      // if (data.hp_html != null) {
-      //   var hp_html = stateFromHTML(data.hp_html);
-      //   var createHtml = EditorState.createWithContent(hp_html);
-      //   setRichText((richText) => ({
-      //     editor: createHtml, editorHTML: data.hp_html
-      //   }));
-      // } else {
-      //   setRichText((richText) => ({
-      //     editor: '', editorHTML: ''
-      //   }));
-      // }
-      if (data.hp_file_path === '') {
-        var previewimage = '';
-        var boolprevi = false;
-        var previewtype = false;
-      } else {
-        var previewtype = checkFileTypeExist(data.hp_file_path);
-        var previewimage = data.hp_file_path;
-        var boolprevi = true;
-      } if (data.avatar_mobile_P === '') {
-        var previewimage1 = '';
-        var boolprevi1 = false;
-        var previewtype1 = false;
-      } else {
-        var previewimage1 = data.avatar_mobile_P;
-        var boolprevi1 = true;
-        var previewtype1 = checkFileTypeExist(data.avatar_mobile_P);
-      } if (data.avatar_mobile_L === '') {
-        var previewimage2 = '';
-        var boolprevi2 = false;
-        var previewtype2 = false;
-      } else {
-        var previewimage2 = data.avatar_mobile_L;
-        var boolprevi2 = true;
-        var previewtype2 = checkFileTypeExist(data.avatar_mobile_L);
-      }
-      setFile((file) => ({
-        image: data.hp_file_path,
-        previewimage: previewimage,
-        previewtype: previewtype,
-        boolprevi: boolprevi,
-        image1: data.avatar_mobile_P,
-        previewimage1: previewimage1,
-        previewtype1: previewtype1,
-        boolprevi1: boolprevi1,
-        image2: data.avatar_mobile_L,
-        previewimage2: previewimage2,
-        boolprevi2: boolprevi2,
-        previewtype2: previewtype2
-      }));
-    });
+    {
+      sysid &&
+        ApiDataService.get(Api_Edit + 'lang/' + sysid + '/edit', lang).then(response => {
+          let data = response.data.result[0];
+          setValue("hp_desc", data?.hp_desc);
+          setValue("hp_link_title", data?.hp_link_title);
+          setValue("hp_link_url", data?.hp_desc.replace(/[^A-Z0-9]+/ig, "-").replace(/-$/, "").toLowerCase());
+          // if (data.hp_html != null) {
+          //   var hp_html = stateFromHTML(data.hp_html);
+          //   var createHtml = EditorState.createWithContent(hp_html);
+          //   setRichText((richText) => ({
+          //     editor: createHtml, editorHTML: data.hp_html
+          //   }));
+          // } else {
+          //   setRichText((richText) => ({
+          //     editor: '', editorHTML: ''
+          //   }));
+          // }
+          if (data?.hp_file_path === '') {
+            var previewimage = '';
+            var boolprevi = false;
+            var previewtype = false;
+          } else {
+            var previewtype = checkFileTypeExist(data?.hp_file_path);
+            var previewimage = data?.hp_file_path;
+            var boolprevi = true;
+          } if (data?.avatar_mobile_P === '') {
+            var previewimage1 = '';
+            var boolprevi1 = false;
+            var previewtype1 = false;
+          } else {
+            var previewimage1 = data?.avatar_mobile_P;
+            var boolprevi1 = true;
+            var previewtype1 = checkFileTypeExist(data?.avatar_mobile_P);
+          } if (data?.avatar_mobile_L === '') {
+            var previewimage2 = '';
+            var boolprevi2 = false;
+            var previewtype2 = false;
+          } else {
+            var previewimage2 = data?.avatar_mobile_L;
+            var boolprevi2 = true;
+            var previewtype2 = checkFileTypeExist(data?.avatar_mobile_L);
+          }
+          setFile((file) => ({
+            image: data?.hp_file_path,
+            previewimage: previewimage,
+            previewtype: previewtype,
+            boolprevi: boolprevi,
+            image1: data?.avatar_mobile_P,
+            previewimage1: previewimage1,
+            previewtype1: previewtype1,
+            boolprevi1: boolprevi1,
+            image2: data?.avatar_mobile_L,
+            previewimage2: previewimage2,
+            boolprevi2: boolprevi2,
+            previewtype2: previewtype2
+          }));
+        });
+    }
   }
   const isTesting = (file) => {
     console.log(file, "TSET");
@@ -1025,7 +1044,7 @@ function Modalwindow(props) {
   //console.log(applicableCountriesList, langForm.selectLang);
   return (
     <div>
-      <Modal animation={false} size="lg" show={props.show} onHide={props.closeModal} >
+      <Modal animation={false} size="lg" show={props.show} onHide={props.closeModal} enforceFocus={false} >
         <Modal.Header closeButton className="">
           <Modal.Title id="modalTitle">
             Home Page
@@ -1480,7 +1499,7 @@ function Modalwindow(props) {
                   <Row>
                     <Col md={2}>
                       <label>Language</label>
-                      <select onChange={(e) => selectLang(e)} ref={register} className="form-control form-control-sm" name="lang_code">
+                      <select onChange={(e) => selectLang(e)} ref={register} className="form-control form-control-sm" name="lang_code" value={langForm?.selectLang}>
                         {(langForm.langDrop.length > 0 ?
                           langForm.langDrop.map((data, inx) => {
                             return (

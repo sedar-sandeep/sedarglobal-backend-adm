@@ -1,3 +1,5 @@
+import DeploymentDashboard from './Components/Logs/Logs';
+import LogsManager from './Components/Logs/LogsManager';
 import React from 'react';
 import { Route, Switch, Redirect } from "react-router-dom";
 import Login from './Components/Login/Login';
@@ -114,6 +116,8 @@ function RouterSetup(props) {
         <Route exact path="/Language" component={Language} />
         <Route exact path="/uploads" component={Uploads} />
         <Route exact path="/queryexecutions" component={QueryExecutions} />
+        <Route exact path="/logs" component={DeploymentDashboard} />
+        <Route exact path="/api-logs" component={LogsManager} />
         {/* <Route exact path="/blog" component={Blog} /> */}
         {/* <Route exact path="/blogCategory" component={BlogCategory} /> */}
 

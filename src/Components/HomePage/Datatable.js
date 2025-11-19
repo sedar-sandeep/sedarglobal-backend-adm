@@ -7,6 +7,7 @@ import { Dropdown, DropdownButton, Form } from 'react-bootstrap';
 import Select from 'react-select';
 import AccessSecurity from '../../AccessSecurity';
 import History from '../History/History';
+import ApiDataService from '../../services/ApiDataService';
 
 const customStyles = {
   control: base => ({
@@ -21,6 +22,8 @@ function DataTableView(props) {
   const [slug, setSlug] = useState("");
   const [globalContents, setGlobalContent] = useState(false);
   const [security, setSecurity] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
+
   const pageFilter = async (e, param) => {
     if (param === 'P') {
       await setPageNames(e.value);
@@ -42,8 +45,11 @@ function DataTableView(props) {
     props.slugName(slug);
   }, [slug]);
   useEffect(() => {
+    props.langCode(selectedLanguage);
+  }, [selectedLanguage]);
+  useEffect(() => {
     props.globalContent(globalContents);
-  }, [globalContents]);  useEffect(() => {
+  }, [globalContents]); useEffect(() => {
     props.globalContent(globalContents);
   }, [globalContents]);
   const securityAccess = (param) => {
@@ -62,6 +68,39 @@ function DataTableView(props) {
 
 
   const [isChecked, setIsChecked] = useState(false);
+  const [languageOptions, setLanguageOptions] = useState([]);
+  
+  // Fetch language options from API
+  const fetchLanguageOptions = async () => {
+    try {
+      const response = await ApiDataService.get('admin/portal/homepage/lang/lov', null);
+      const languages = response.data.result;
+      const options = languages.map(lang => ({
+        value: lang.code,
+        label: lang.desc
+      }));
+      setLanguageOptions(options);
+    } catch (error) {
+      console.error('Error fetching languages:', error);
+      // Fallback to default options if API fails
+      setLanguageOptions([
+        { value: 'en', label: 'English' },
+        { value: 'es', label: 'Spanish' },
+        { value: 'ar', label: 'Arabic' }
+      ]);
+    }
+  };
+
+  useEffect(() => {
+    fetchLanguageOptions();
+  }, []);
+
+  useEffect(() => {
+    console.log('Datatable language changed to:', selectedLanguage);
+    if (props.onLanguageChange) {
+      props.onLanguageChange(selectedLanguage);
+    }
+  }, [selectedLanguage, props.onLanguageChange]);
 
   const handleCheckboxChange = (e) => {
     pageFilter(true, "x");
@@ -89,6 +128,40 @@ function DataTableView(props) {
           />
         </div>
       )}
+
+
+
+    </div>
+  );
+  const selectDrops = (
+    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+
+
+      <div style={{ flex: 1 }}>
+        {/* <select onChange={(e) => {
+          e.preventDefault();
+          setSelectedLanguage(e.target.value);
+        }}
+          className="form-control form-control-sm" name="lang_code_header" value={selectedLanguage}>
+          {(languageOptions ?
+            languageOptions.map((data, inx) => {
+              return (
+                <option key={inx} value={data.value}>{data.label}</option>
+              )
+            }) : '')
+          }
+        </select> */}
+        <Select
+          placeholder="Language"
+          onChange={(e) => {
+            setSelectedLanguage(e.value);
+          }}
+          options={languageOptions}
+          className="custdropdwn pointerr"
+          styles={customStyles}
+        />
+      </div>
+
     </div>
   );
   const slugDrop = (
@@ -134,6 +207,11 @@ function DataTableView(props) {
     {
       key: 'hp_ordering',
       text: 'Ordering',
+      sortable: true,
+    },
+    {
+      key: 'hp_file_path',
+      text: 'Image',
       sortable: true,
     },
     {
@@ -235,6 +313,7 @@ function DataTableView(props) {
         records={props.datajson.results}
         columns={columns}
         dropdown={[selectDrop,]}
+        dropdowns={[selectDrops,]}
         dropdownslug={slugDrop}
         history_btn={history_btn}
         dynamic={true}

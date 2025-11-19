@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^29.1.0",
-    "@ckeditor/ckeditor5-react": "^3.0.3",
+    "@ckeditor/ckeditor5-react": "^3.0.2",
     "@ckeditor/ckeditor5-upload": "^41.4.2",
     "@date-io/date-fns": "^2.11.0",
     "@fortawesome/fontawesome-free-solid": "^5.0.13",
@@ -33,6 +33,7 @@
     "moment": "^2.29.1",
     "multiselect-react-dropdown": "^2.0.25",
     "qs": "^6.10.1",
+    "querystring-es3": "^0.2.1",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.1",
     "react-bootstrap-date-picker": "^5.1.0",

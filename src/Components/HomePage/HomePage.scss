@@ -173,3 +173,7 @@
 .mrgTop {
   margin-top: 10px;
 }
+.ck.ck-balloon-panel {
+  z-index: 2000 !important;
+  pointer-events: auto !important;
+}
