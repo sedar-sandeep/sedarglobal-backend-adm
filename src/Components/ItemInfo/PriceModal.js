@@ -31,8 +31,8 @@ class PriceModal extends Component {
     super(props);
     this._isMounted = true;
     this.state = {
-      ccy_code: '',
-      currency:'',
+      ccy_code: 'AED',
+      currency:'AED',
       price:'',
       old_price:'',
       offer_price: '', 
@@ -411,7 +411,7 @@ class PriceModal extends Component {
           <Row>
             <Col className={this.state.mode === '' ? "d-none" : 'col-sm-4'}>
               <Form noValidate onSubmit={this.handleSubmit} autoComplete="off">
-                <Form.Row>
+                {/* <Form.Row>
                   <Col>
                     <Form.Group> 
                       <Form.Label>Currency</Form.Label>
@@ -423,7 +423,7 @@ class PriceModal extends Component {
                       </Form.Control>
                     </Form.Group>
                   </Col>
-                </Form.Row> 
+                </Form.Row> */}
 
                 <Form.Row>          
                 <Col>
