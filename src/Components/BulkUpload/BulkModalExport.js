@@ -227,7 +227,7 @@ class BulkModalExport extends Component {
         <Modal animation={false} size="lg" show={this.props.show} onHide={this.props.closeModal} >
           <Modal.Header closeButton className="">
             <Modal.Title id="modalTitle">
-              Bulk Upload
+              Bulk Export
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
