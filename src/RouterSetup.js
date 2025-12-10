@@ -51,6 +51,7 @@ import Uploads from './Components/Uploads/';
 import QueryExecutions from './Components/QueryExecutions/';
 // import Blog from './Components/Blog/';
 // import BlogCategory from './Components/Blog/Category/';
+import BulkList from './Components/BulkUpload/BulkList';
 
 
 
@@ -120,6 +121,7 @@ function RouterSetup(props) {
         <Route exact path="/api-logs" component={LogsManager} />
         {/* <Route exact path="/blog" component={Blog} /> */}
         {/* <Route exact path="/blogCategory" component={BlogCategory} /> */}
+        <Route exact path="/bulk" component={BulkList} />
 
 
       </Switch>
